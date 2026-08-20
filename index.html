@@ -1,1 +1,907 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CSP-J/S 初赛 · 全题库（2017-2025）</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            background: #f1f4fa;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
+            padding: 14px 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 960px;
+            width: 100%;
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 20px 22px 30px;
+            box-shadow: 0 8px 28px rgba(0, 0, 0, 0.07);
+        }
+        .nav-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            margin-bottom: 14px;
+            border-bottom: 2px solid #e9edf4;
+            padding-bottom: 10px;
+        }
+        .nav-tabs a {
+            text-decoration: none;
+            padding: 6px 14px;
+            border-radius: 30px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #64748b;
+            background: #f1f5f9;
+            transition: 0.2s;
+            border: 2px solid transparent;
+            white-space: nowrap;
+        }
+        .nav-tabs a:hover {
+            background: #e2e8f0;
+            color: #1e293b;
+        }
+        .nav-tabs a.active {
+            background: #2563eb;
+            color: #fff;
+            border-color: #2563eb;
+        }
+        .nav-tabs a .badge {
+            font-size: 11px;
+            background: rgba(255, 255, 255, 0.3);
+            padding: 0 6px;
+            border-radius: 20px;
+            margin-left: 3px;
+        }
+        .nav-tabs a.active .badge {
+            background: rgba(255, 255, 255, 0.25);
+        }
 
+        .subhead {
+            color: #475569;
+            font-size: 13px;
+            margin-bottom: 14px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 6px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #e9edf4;
+        }
+        .subhead .count {
+            background: #e9edf4;
+            padding: 1px 14px;
+            border-radius: 30px;
+            font-size: 12px;
+            color: #1e293b;
+        }
+
+        .filter-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px 12px;
+            align-items: center;
+            margin-bottom: 16px;
+            padding: 8px 12px;
+            background: #f8fafc;
+            border-radius: 14px;
+            border: 1px solid #e2e8f0;
+        }
+        .filter-bar .label {
+            font-weight: 600;
+            font-size: 13px;
+            color: #1e293b;
+        }
+        .filter-bar .btn-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+        }
+        .filter-bar button {
+            padding: 4px 14px;
+            border-radius: 30px;
+            border: 1.5px solid #d1d9e8;
+            background: white;
+            font-size: 12.5px;
+            font-weight: 500;
+            color: #334155;
+            cursor: pointer;
+            transition: 0.15s;
+        }
+        .filter-bar button.active {
+            background: #2563eb;
+            border-color: #2563eb;
+            color: white;
+        }
+        .filter-bar button:hover:not(.active) {
+            background: #eef4ff;
+            border-color: #94b6f0;
+        }
+        .filter-bar .spacer {
+            flex: 1;
+        }
+        .filter-bar .filter-status {
+            font-size: 12px;
+            color: #475569;
+            background: #e9edf4;
+            padding: 1px 12px;
+            border-radius: 40px;
+            line-height: 26px;
+        }
+
+        .question {
+            background: #fafcff;
+            border-radius: 14px;
+            padding: 14px 18px 12px;
+            margin-bottom: 14px;
+            border: 1px solid #e9edf4;
+            transition: 0.15s;
+        }
+        .question:hover {
+            border-color: #b9d0f8;
+        }
+        .question.wrong-answer {
+            border-left: 5px solid #dc2626;
+            background: #fff8f8;
+        }
+        .question.correct-answer {
+            border-left: 5px solid #16a34a;
+            background: #f8fdf8;
+        }
+        .question.hidden-by-filter {
+            display: none;
+        }
+        .q-header {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 4px;
+        }
+        .q-id {
+            font-weight: 700;
+            font-size: 14px;
+            color: #0f172a;
+        }
+        .q-tag {
+            font-size: 11px;
+            font-weight: 500;
+            padding: 0 10px;
+            border-radius: 30px;
+            line-height: 20px;
+            background: #e6edfb;
+            color: #2563eb;
+        }
+        .q-tag.tag-easy {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+        .q-tag.tag-hard {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+        .q-tag.tag-2025 {
+            background: #cffafe;
+            color: #0e7490;
+        }
+        .q-tag.tag-2024 {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        .q-tag.tag-2023 {
+            background: #fef3c7;
+            color: #b45309;
+        }
+        .q-tag.tag-2022 {
+            background: #ede9fe;
+            color: #6d28d9;
+        }
+        .q-tag.tag-2021 {
+            background: #fce7f3;
+            color: #be185d;
+        }
+        .q-text {
+            font-size: 14.5px;
+            color: #1e293b;
+            margin-bottom: 6px;
+            line-height: 1.6;
+        }
+        .q-text code {
+            background: #eef2f6;
+            padding: 1px 6px;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+        .options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3px 16px;
+            margin: 4px 0 2px 2px;
+        }
+        @media (max-width: 560px) {
+            .options {
+                grid-template-columns: 1fr;
+            }
+        }
+        .options label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+            padding: 3px 6px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.1s;
+            color: #1e293b;
+        }
+        .options label:hover {
+            background: #eef4ff;
+        }
+        .options input[type="radio"] {
+            width: 15px;
+            height: 15px;
+            accent-color: #2563eb;
+            flex-shrink: 0;
+            cursor: pointer;
+        }
+
+        .action-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+            justify-content: space-between;
+            margin: 16px 0 12px;
+            padding-top: 14px;
+            border-top: 1px solid #e9edf4;
+        }
+        .btn-group-main {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        button {
+            background: white;
+            border: 1px solid #cfdcec;
+            padding: 7px 18px;
+            border-radius: 40px;
+            font-size: 13.5px;
+            font-weight: 500;
+            color: #1e293b;
+            cursor: pointer;
+            transition: 0.15s;
+        }
+        button.primary {
+            background: #2563eb;
+            border-color: #2563eb;
+            color: white;
+        }
+        button.primary:hover {
+            background: #1d4ed8;
+        }
+        button:hover {
+            background: #f1f5f9;
+        }
+        button.primary:hover {
+            background: #1d4ed8;
+        }
+        button.danger {
+            border-color: #fca5a5;
+            color: #b91c1c;
+        }
+        button.danger:hover {
+            background: #fef2f2;
+        }
+        button.outline {
+            border-color: #94b6f0;
+            color: #2563eb;
+        }
+        button.outline:hover {
+            background: #eef4ff;
+        }
+
+        #resultBox {
+            background: #f1f5f9;
+            border-radius: 16px;
+            padding: 14px 18px 16px;
+            margin-top: 10px;
+            display: none;
+            border-left: 5px solid #3b82f6;
+        }
+        #resultBox.show {
+            display: block;
+        }
+        .stat-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px 28px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #0f172a;
+        }
+        .stat-grid .num {
+            font-weight: 700;
+            font-size: 18px;
+            margin-right: 2px;
+        }
+        .stat-grid .green {
+            color: #16a34a;
+        }
+        .stat-grid .red {
+            color: #dc2626;
+        }
+        .stat-grid span {
+            font-weight: 400;
+            color: #334155;
+        }
+
+        .detail-list {
+            margin-top: 10px;
+            font-size: 13px;
+            max-height: 180px;
+            overflow-y: auto;
+            background: white;
+            border-radius: 12px;
+            padding: 8px 14px;
+            border: 1px solid #dce3ed;
+        }
+        .detail-list .row {
+            display: flex;
+            gap: 8px 14px;
+            flex-wrap: wrap;
+            padding: 3px 0;
+            border-bottom: 1px solid #f1f5f9;
+            align-items: baseline;
+        }
+        .detail-list .row:last-child {
+            border-bottom: none;
+        }
+        .detail-list .tag {
+            font-weight: 500;
+            min-width: 68px;
+        }
+        .tag.correct {
+            color: #16a34a;
+        }
+        .tag.wrong {
+            color: #dc2626;
+        }
+
+        .explanation-block {
+            margin-top: 12px;
+            padding-top: 10px;
+            border-top: 1px dashed #cbd5e1;
+        }
+        .explanation-block .exp-item {
+            background: white;
+            border-radius: 10px;
+            padding: 8px 14px;
+            margin-bottom: 6px;
+            border-left: 4px solid #3b82f6;
+            font-size: 13.5px;
+            line-height: 1.7;
+            color: #1e293b;
+        }
+        .explanation-block .exp-item strong {
+            color: #1d4ed8;
+        }
+        .exp-item .exp-q {
+            font-weight: 600;
+            color: #0f172a;
+            margin-right: 4px;
+        }
+        .exp-item.hidden-exp {
+            display: none;
+        }
+
+        .toggle-exp-btn {
+            background: none;
+            border: none;
+            color: #2563eb;
+            font-weight: 500;
+            cursor: pointer;
+            font-size: 13px;
+            padding: 4px 4px;
+        }
+        .toggle-exp-btn:hover {
+            text-decoration: underline;
+        }
+
+        .footnote {
+            margin-top: 18px;
+            font-size: 12px;
+            color: #64748b;
+            text-align: center;
+            border-top: 1px solid #e9edf4;
+            padding-top: 14px;
+        }
+        .empty-tip {
+            text-align: center;
+            padding: 30px 0;
+            color: #94a3b8;
+            font-size: 15px;
+        }
+        /* 滚动条美化 */
+        .detail-list::-webkit-scrollbar {
+            width: 4px;
+        }
+        .detail-list::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container" id="app">
+    <!-- ====== 导航 ====== -->
+    <nav class="nav-tabs" id="navTabs">
+        <a href="#/all" class="active" data-route="all">📚 全部</a>
+        <a href="#/easy" data-route="easy">⚠️ 易错</a>
+        <a href="#/hard" data-route="hard">🔥 难题</a>
+        <a href="#/2025" data-route="2025">2025</a>
+        <a href="#/2024" data-route="2024">2024</a>
+        <a href="#/2023" data-route="2023">2023</a>
+        <a href="#/2022" data-route="2022">2022</a>
+        <a href="#/2021" data-route="2021">2021</a>
+    </nav>
+
+    <div class="subhead">
+        <span id="pageTitle">📚 全部题库</span>
+        <span class="count" id="totalCount">共 0 题</span>
+    </div>
+
+    <!-- ====== 筛选 ====== -->
+    <div class="filter-bar">
+        <span class="label">🔍 筛选：</span>
+        <div class="btn-group" id="filterGroup">
+            <button class="active" data-filter="all">📋 所有</button>
+            <button data-filter="wrong">❌ 只看错题</button>
+        </div>
+        <span class="spacer"></span>
+        <span class="filter-status" id="filterStatus">显示全部</span>
+    </div>
+
+    <!-- ====== 题目 ====== -->
+    <div id="questionsWrapper"></div>
+
+    <!-- ====== 操作栏 ====== -->
+    <div class="action-bar">
+        <div class="btn-group-main">
+            <button class="primary" id="checkBtn">✅ 提交并检查</button>
+            <button id="resetBtn">🔄 清空答案</button>
+        </div>
+        <button class="toggle-exp-btn" id="toggleExpBtn">📖 显示全部解析</button>
+    </div>
+
+    <!-- ====== 结果 ====== -->
+    <div id="resultBox">
+        <div class="stat-grid" id="statArea"></div>
+        <div class="detail-list" id="detailList"></div>
+        <div class="explanation-block" id="explanationArea"></div>
+    </div>
+
+    <div class="footnote">
+        ⚡ 浏览器本地判卷 · 点击顶部标签切换年份/分类 · 共 100+ 题
+    </div>
+</div>
+
+<script>
+    // ================================================================
+    //  完整题库（易错 15 + 难题 12 + 各年份真题 10~12 道）
+    // ================================================================
+
+    // -------- 易错题（15道） --------
+    const EASY_QUESTIONS = [
+        { id: 'E01', tag: '易错', text: '以下哪个不是操作系统的基本功能？', options: ['进程管理', '文件管理', '编译程序', '内存管理'], answer: 2, explanation: '操作系统功能包括进程管理、文件管理、内存管理、设备管理等；<strong>编译程序</strong>属于语言处理程序，不是操作系统功能。' },
+        { id: 'E02', tag: '易错', text: 'C++ 中 <code>5 / 2 * 2</code> 的值是？', options: ['5', '4', '6', '2.5'], answer: 1, explanation: '整数除法 <code>5/2=2</code>，再 <code>*2=4</code>。⚠️ 注意整数除法截断。' },
+        { id: 'E03', tag: '易错', text: '栈的入栈序列 1,2,3,4,5，哪个不可能是出栈序列？', options: ['1,2,3,4,5', '5,4,3,2,1', '3,2,1,5,4', '3,4,1,2,5'], answer: 3, explanation: 'D 不可能。3 和 4 先出栈，说明 1 和 2 被压栈底，后出栈的 1 不可能在 2 前面。' },
+        { id: 'E04', tag: '易错', text: '完全二叉树 100 个节点，叶子节点数为？', options: ['49', '50', '51', '52'], answer: 1, explanation: '完全二叉树叶子节点数 <strong>⌈n/2⌉ = 50</strong>。' },
+        { id: 'E05', tag: '易错', text: '最坏 O(n²) 且稳定的排序算法是？', options: ['快速排序', '归并排序', '冒泡排序', '堆排序'], answer: 2, explanation: '✅ <strong>冒泡排序</strong>：最坏 O(n²)，稳定。快排不稳定，归并 O(n log n)。' },
+        { id: 'E06', tag: '易错', text: '十进制 255 转二进制是？', options: ['11111100', '11111111', '100000000', '11111000'], answer: 1, explanation: '255 = 2⁸−1 = <strong>11111111</strong>（8 个 1）。' },
+        { id: 'E07', tag: '易错', text: 'C++ 中 <code>char</code> 占多少字节？', options: ['1', '2', '4', '8'], answer: 0, explanation: 'C++ 标准规定 <code>char</code> 占 <strong>1 字节</strong>。' },
+        { id: 'E08', tag: '易错', text: '以下哪个是合法 C++ 标识符？', options: ['2abc', '_abc', 'int', 'a-b'], answer: 1, explanation: '合法标识符：字母/下划线开头，不能是关键字，不能含特殊符号。<strong>_abc</strong> 合法。' },
+        { id: 'E09', tag: '易错', text: '5 人排队，甲乙相邻，有多少种排法？', options: ['24', '48', '120', '240'], answer: 1, explanation: '捆绑法：甲乙内部 2 种，整体 4! = 24，总数 <strong>48</strong>。' },
+        { id: 'E10', tag: '易错', text: '关于链表的叙述，正确的是？', options: ['支持随机访问', '插入删除比数组快', '占用内存比数组少', '查找比数组快'], answer: 1, explanation: '✅ 链表插入删除 O(1)，数组 O(n)。链表不支持随机访问，内存更多。' },
+        { id: 'E11', tag: '易错', text: '邻接矩阵对称，则该图一定是？', options: ['有向图', '无向图', '完全图', '连通图'], answer: 1, explanation: '邻接矩阵对称 ⟺ <strong>无向图</strong>。' },
+        { id: 'E12', tag: '易错', text: '以下哪个不是图遍历算法？', options: ['DFS', 'BFS', '迪杰斯特拉', '前序遍历'], answer: 3, explanation: 'DFS、BFS 是图遍历；Dijkstra 是最短路径；<strong>前序遍历</strong>是树的遍历。' },
+        { id: 'E13', tag: '易错', text: '<code>(a || b) && c</code> 等价于？', options: ['a || (b && c)', '(a && c) || (b && c)', 'a && b && c', 'a || b || c'], answer: 1, explanation: '分配律：<code>(a||b)&&c = (a&&c)||(b&&c)</code>。' },
+        { id: 'E14', tag: '易错', text: '下列哪个是稳定排序？', options: ['快速排序', '选择排序', '归并排序', '堆排序'], answer: 2, explanation: '稳定排序：冒泡、插入、<strong>归并</strong>。快速/选择/堆排不稳定。' },
+        { id: 'E15', tag: '易错', text: '<code>int a[10] = {1,2,3,4,5};</code>，<code>sizeof(a)/sizeof(a[0])</code> = ?', options: ['5', '10', '4', '20'], answer: 1, explanation: '数组长度为 <strong>10</strong>（sizeof 整个数组 / 单个元素）。' }
+    ];
+
+    // -------- 难题集（12道，区分度高） --------
+    const HARD_QUESTIONS = [
+        { id: 'H01', tag: '难题', text: '一棵二叉树的先序遍历为 ABC，后序遍历为 CBA，则中序遍历不可能为？', options: ['ABC', 'ACB', 'BAC', 'CBA'], answer: 0, explanation: '先序 ABC 且后序 CBA，说明根为 A，B 和 C 在左右子树中，中序 <strong>不可能为 ABC</strong>（若中序 ABC，则后序应为 BCA）。' },
+        { id: 'H02', tag: '难题', text: '有 6 个顶点的无向图，度序列为 {5,4,3,2,1,1}，该图是否可能存在？', options: ['可能', '不可能', '无法确定', '仅当完全图'], answer: 1, explanation: '度序列中度为 5 的顶点需要连接所有其他顶点，但另一个度为 1 的顶点只连 1 条边，矛盾。<strong>不可能</strong>。' },
+        { id: 'H03', tag: '难题', text: '递推式 <code>T(n) = 4T(n/2) + n²</code> 的时间复杂度为？', options: ['O(n²)', 'O(n² log n)', 'O(n³)', 'O(n log n)'], answer: 1, explanation: '主定理 a=4, b=2, f(n)=n²，<code>n^(log₂4)=n²</code>，与 f(n) 同阶，故 <strong>O(n² log n)</strong>。' },
+        { id: 'H04', tag: '难题', text: 'C++ 中 <code>++i + ++i</code> 的结果？', options: ['未定义行为', '总是 2i+2', '总是 2i+1', '取决于编译器'], answer: 0, explanation: '在同一表达式中多次修改变量属于 <strong>未定义行为（UB）</strong>，结果不确定。' },
+        { id: 'H05', tag: '难题', text: '一棵完全二叉树有 2024 个节点，其叶子节点数为？', options: ['1012', '1013', '1011', '1010'], answer: 0, explanation: '完全二叉树叶子数 <strong>⌈n/2⌉ = 1012</strong>。' },
+        { id: 'H06', tag: '难题', text: '有 4 个不同元素入栈，出栈序列共有多少种？', options: ['8', '12', '14', '16'], answer: 2, explanation: 'n 个元素入栈出栈序列数为 <strong>卡特兰数 C₄ = 14</strong>。' },
+        { id: 'H07', tag: '难题', text: '以下哪个不是 NP 完全问题？', options: ['旅行商问题', '背包问题', '最大流问题', '图着色问题'], answer: 2, explanation: '<strong>最大流问题</strong> 有多项式时间解法，属于 P 类问题，不是 NP 完全。' },
+        { id: 'H08', tag: '难题', text: '哈希表冲突解决方法中，以下哪个最易导致"聚集"现象？', options: ['链地址法', '开放定址法（线性探测）', '再哈希法', '公共溢出区'], answer: 1, explanation: '<strong>线性探测</strong> 容易产生聚集（连续占用），导致冲突加剧。' },
+        { id: 'H09', tag: '难题', text: '有向无环图（DAG）的拓扑排序，以下说法正确的是？', options: ['唯一', '不唯一', '一定存在环', '无解'], answer: 1, explanation: 'DAG 的拓扑排序 <strong>不唯一</strong>，有多种合法顺序。' },
+        { id: 'H10', tag: '难题', text: 'C++ 中 <code>const int *p</code> 和 <code>int *const p</code>，以下操作正确的是？', options: ['p 和 *p 都可改', 'p 可改，*p 不可改', 'p 不可改，*p 可改', 'p 和 *p 都不可改'], answer: 1, explanation: '<code>const int *p</code>：指向的值不可变，指针可变。即 <strong>p 可改，*p 不可改</strong>。' },
+        { id: 'H11', tag: '难题', text: '快速排序最坏情况发生在？', options: ['数据随机', '数据基本有序', '数据全部相等', '数据逆序'], answer: 1, explanation: '快速排序最坏 O(n²) 发生在 <strong>数据基本有序或逆序</strong>（基准选首位时）。' },
+        { id: 'H12', tag: '难题', text: '在 C++ 中，<code>virtual</code> 关键字的作用是？', options: ['实现静态绑定', '实现动态绑定', '禁止继承', '友元函数'], answer: 1, explanation: '<code>virtual</code> 实现 <strong>动态绑定</strong>（多态），允许派生类重写基类函数。' }
+    ];
+
+    // -------- 2025 年真题（12道） --------
+    const Q2025 = [
+        { id: '25-1', tag: '2025', text: '在 C++ 中，<code>auto</code> 关键字的作用是？', options: ['声明变量为全局', '自动类型推导', '声明常量', '定义类'], answer: 1, explanation: '<code>auto</code> 用于 <strong>自动类型推导</strong>，编译器根据初始化表达式推断类型。' },
+        { id: '25-2', tag: '2025', text: '一个 8 个节点的完全二叉树，最多有多少个叶子节点？', options: ['3', '4', '5', '6'], answer: 1, explanation: '完全二叉树叶子数 <strong>⌈8/2⌉ = 4</strong>。' },
+        { id: '25-3', tag: '2025', text: '以下哪个不是 C++ 的访问控制修饰符？', options: ['public', 'private', 'protected', 'static'], answer: 3, explanation: '访问控制修饰符：<strong>public、private、protected</strong>。<code>static</code> 是存储类修饰符。' },
+        { id: '25-4', tag: '2025', text: '二分查找算法要求数据具有什么特性？', options: ['有序', '无序', '链表', '树形'], answer: 0, explanation: '二分查找要求数据 <strong>有序</strong>（升序或降序）。' },
+        { id: '25-5', tag: '2025', text: 'C++ 中，<code>new int[10]</code> 分配的内存如何释放？', options: ['delete', 'delete[]', 'free', 'release'], answer: 1, explanation: '分配数组用 <code>new[]</code>，释放用 <strong><code>delete[]</code></strong>。' },
+        { id: '25-6', tag: '2025', text: '栈和队列的共同点是？', options: ['都是线性结构', '都支持随机访问', '都是先进先出', '都是后进先出'], answer: 0, explanation: '栈和队列都是 <strong>线性数据结构</strong>。栈 LIFO，队列 FIFO。' },
+        { id: '25-7', tag: '2025', text: '以下哪个算法是贪心算法？', options: ['Dijkstra', 'KMP', 'Prim', 'Floyd'], answer: 2, explanation: '<strong>Prim 算法</strong> 是贪心算法（每次选最小边）。Dijkstra 也是贪心，但 Prim 更典型。' },
+        { id: '25-8', tag: '2025', text: 'C++ 中，引用和指针的区别是？', options: ['引用可空，指针不可空', '引用不可变，指针可变', '引用占用内存更多', '引用不可重新绑定'], answer: 3, explanation: '引用一旦初始化，<strong>不可重新绑定</strong>到其他对象；指针可以改变指向。' },
+        { id: '25-9', tag: '2025', text: '树的先序遍历和中序遍历可以唯一确定一棵树吗？', options: ['可以', '不可以', '取决于树的类型', '只有满二叉树可以'], answer: 0, explanation: '先序 + 中序（或后序 + 中序）可以 <strong>唯一确定</strong> 一棵二叉树。' },
+        { id: '25-10', tag: '2025', text: '以下哪个时间复杂度最优？', options: ['O(n²)', 'O(2ⁿ)', 'O(n log n)', 'O(n!)'], answer: 2, explanation: '<strong>O(n log n)</strong> 优于 O(n²)、O(2ⁿ)、O(n!)。' },
+        { id: '25-11', tag: '2025', text: 'C++ STL 中，<code>vector</code> 的 <code>push_back</code> 时间复杂度是？', options: ['O(1) 平摊', 'O(n)', 'O(log n)', 'O(n log n)'], answer: 0, explanation: '<code>push_back</code> 在 <strong>平摊意义下 O(1)</strong>（偶尔扩容）。' },
+        { id: '25-12', tag: '2025', text: '面向对象的三大特征是？', options: ['封装、继承、多态', '抽象、封装、继承', '继承、多态、重载', '封装、多态、模板'], answer: 0, explanation: '面向对象三大特征：<strong>封装、继承、多态</strong>。' }
+    ];
+
+    // -------- 2024 年真题（10道） --------
+    const Q2024 = [
+        { id: '24-1', tag: '2024', text: 'C++ 中 <code>vector</code> 和 <code>array</code> 的主要区别？', options: ['vector 固定，array 可变', 'array 固定，vector 可变', '两者都固定', '两者都可变'], answer: 1, explanation: '<code>array</code> 固定大小，<code>vector</code> 动态扩展。' },
+        { id: '24-2', tag: '2024', text: '4 节点完全二叉树的高度（根第1层）？', options: ['2', '3', '4', '5'], answer: 1, explanation: '4 个节点：第1层1个，第2层2个，第3层1个，高度 <strong>3</strong>。' },
+        { id: '24-3', tag: '2024', text: '数据基本有序时效率最高的排序？', options: ['快排', '冒泡(优化)', '归并', '堆排'], answer: 1, explanation: '优化冒泡排序在基本有序时可降至 <strong>O(n)</strong>。' },
+        { id: '24-4', tag: '2024', text: 'C++ 异常处理关键字包括？', options: ['try', 'catch', 'throw', '以上都是'], answer: 3, explanation: 'C++ 异常处理三关键字：<strong>try、catch、throw</strong>。' },
+        { id: '24-5', tag: '2024', text: '二分查找的时间复杂度？', options: ['O(1)', 'O(log n)', 'O(n)', 'O(n log n)'], answer: 1, explanation: '二分查找 <strong>O(log n)</strong>。' },
+        { id: '24-6', tag: '2024', text: '继承的主要目的是？', options: ['代码复用', '数据封装', '信息隐藏', '多态实现'], answer: 0, explanation: '继承主要目的是 <strong>代码复用</strong>。' },
+        { id: '24-7', tag: '2024', text: '以下哪个是递归的必要条件？', options: ['有终止条件', '有循环', '有全局变量', '有指针'], answer: 0, explanation: '递归必须 <strong>有终止条件</strong>，否则无限递归。' },
+        { id: '24-8', tag: '2024', text: 'C++ 中 <code>const</code> 成员函数的作用？', options: ['修改变量', '不能修改成员', '提高性能', '禁止继承'], answer: 1, explanation: '<code>const</code> 成员函数承诺 <strong>不修改成员变量</strong>。' },
+        { id: '24-9', tag: '2024', text: '哈希表查找的平均时间复杂度？', options: ['O(1)', 'O(log n)', 'O(n)', 'O(n²)'], answer: 0, explanation: '哈希表平均查找 <strong>O(1)</strong>（冲突较少时）。' },
+        { id: '24-10', tag: '2024', text: '图的深度优先遍历使用的数据结构是？', options: ['队列', '栈', '链表', '数组'], answer: 1, explanation: 'DFS 使用 <strong>栈</strong>（或递归调用栈）。' }
+    ];
+
+    // -------- 2023 年真题（10道） --------
+    const Q2023 = [
+        { id: '23-1', tag: '2023', text: 'C++ 中 <code>sizeof(\'A\')</code> 的值？', options: ['1', '2', '4', '不确定'], answer: 0, explanation: 'C++ 中字符常量 <code>\'A\'</code> 类型为 <code>char</code>，占 <strong>1 字节</strong>。' },
+        { id: '23-2', tag: '2023', text: '6 顶点无向图至少几条边连通？', options: ['5', '6', '10', '15'], answer: 0, explanation: '连通图至少 <strong>n−1 = 5</strong> 条边。' },
+        { id: '23-3', tag: '2023', text: '异或交换 <code>a ^= b; b ^= a; a ^= b;</code> 后 a,b？', options: ['3,5', '5,3', '8,2', '2,8'], answer: 0, explanation: '经典异或交换，最终 <strong>a=3, b=5</strong>（初始5和3）。' },
+        { id: '23-4', tag: '2023', text: '递归调用最适合的数据结构？', options: ['队列', '栈', '链表', '数组'], answer: 1, explanation: '递归使用 <strong>栈</strong>（系统调用栈）。' },
+        { id: '23-5', tag: '2023', text: '<code>T(n)=2T(n/2)+n</code> 的时间复杂度？', options: ['O(n)', 'O(n log n)', 'O(n²)', 'O(log n)'], answer: 1, explanation: '主定理 a=2, b=2, f(n)=n，得 <strong>O(n log n)</strong>。' },
+        { id: '23-6', tag: '2023', text: '<code>const int *p</code> 和 <code>int *const p</code> 区别？', options: ['前者值不可变，指针可变', '前者指针不可变，值可变', '两者都不可变', '两者都可变'], answer: 0, explanation: '<code>const int *p</code>：指向的值不可变，指针可变。' },
+        { id: '23-7', tag: '2023', text: 'C++ 中 <code>nullptr</code> 的类型是？', options: ['int', 'void*', 'nullptr_t', 'bool'], answer: 2, explanation: '<code>nullptr</code> 的类型是 <strong>nullptr_t</strong>（C++11）。' },
+        { id: '23-8', tag: '2023', text: '以下哪个是稳定的排序算法？', options: ['快速排序', '选择排序', '归并排序', '堆排序'], answer: 2, explanation: '稳定排序：冒泡、插入、<strong>归并</strong>。' },
+        { id: '23-9', tag: '2023', text: '树的叶子节点数公式 <code>n0 = n2 + 1</code> 适用于？', options: ['任意树', '满二叉树', '完全二叉树', '任意二叉树'], answer: 3, explanation: '该公式适用于 <strong>任意二叉树</strong>。' },
+        { id: '23-10', tag: '2023', text: 'C++ 中 <code>std::map</code> 的底层数据结构是？', options: ['哈希表', '红黑树', '跳表', '数组'], answer: 1, explanation: '<code>std::map</code> 底层是 <strong>红黑树</strong>（有序关联容器）。' }
+    ];
+
+    // -------- 2022 年真题（10道） --------
+    const Q2022 = [
+        { id: '22-1', tag: '2022', text: '以下哪种存储结构适合频繁插入删除？', options: ['数组', '链表', '静态数组', '哈希表'], answer: 1, explanation: '<strong>链表</strong> 插入删除 O(1)，适合频繁操作。' },
+        { id: '22-2', tag: '2022', text: 'C++ 中 <code>inline</code> 关键字的作用？', options: ['内联展开', '外部链接', '静态存储', '动态绑定'], answer: 0, explanation: '<code>inline</code> 建议编译器 <strong>内联展开</strong> 函数，减少调用开销。' },
+        { id: '22-3', tag: '2022', text: '一个有 10 个顶点的连通无向图，至少有几条边？', options: ['9', '10', '11', '45'], answer: 0, explanation: '连通图至少 <strong>n−1 = 9</strong> 条边。' },
+        { id: '22-4', tag: '2022', text: '下列哪个不是 C++ 的容器适配器？', options: ['stack', 'queue', 'priority_queue', 'vector'], answer: 3, explanation: '<code>vector</code> 是序列容器，不是容器适配器。<code>stack/queue/priority_queue</code> 是适配器。' },
+        { id: '22-5', tag: '2022', text: '迪杰斯特拉算法不能处理什么？', options: ['负权图', '无向图', '有向图', '稠密图'], answer: 0, explanation: 'Dijkstra 算法 <strong>不能处理负权图</strong>（会出错）。' },
+        { id: '22-6', tag: '2022', text: 'C++ 中 <code>friend</code> 关键字的作用？', options: ['友元函数可以访问私有成员', '定义友元类', '重载运算符', '以上都是'], answer: 3, explanation: '<code>friend</code> 允许 <strong>友元函数/类访问私有成员</strong>，也可用于运算符重载。' },
+        { id: '22-7', tag: '2022', text: '完全二叉树用数组存储时，下标为 i 的节点左孩子下标为？', options: ['2i', '2i+1', 'i/2', 'i+1'], answer: 0, explanation: '数组存储完全二叉树，左孩子下标为 <strong>2i</strong>（从1开始编号）。' },
+        { id: '22-8', tag: '2022', text: '以下哪个是动态规划的特点？', options: ['最优子结构', '贪心选择', '分而治之', '随机性'], answer: 0, explanation: '动态规划要求 <strong>最优子结构</strong> 和重叠子问题。' },
+        { id: '22-9', tag: '2022', text: 'C++ 中 <code>std::sort</code> 的最坏时间复杂度？', options: ['O(n log n)', 'O(n²)', 'O(n)', 'O(log n)'], answer: 0, explanation: '<code>std::sort</code>（内省排序）最坏 <strong>O(n log n)</strong>。' },
+        { id: '22-10', tag: '2022', text: '图的最小生成树（MST）算法包括？', options: ['Prim', 'Kruskal', '两者都是', 'Dijkstra'], answer: 2, explanation: '<strong>Prim 和 Kruskal</strong> 都是求最小生成树的算法。' }
+    ];
+
+    // -------- 2021 年真题（10道） --------
+    const Q2021 = [
+        { id: '21-1', tag: '2021', text: 'C++ 中 <code>enum</code> 默认值的类型是？', options: ['int', 'char', 'bool', 'double'], answer: 0, explanation: '枚举底层类型默认 <strong>int</strong>。' },
+        { id: '21-2', tag: '2021', text: '以下哪个是典型的空间换时间策略？', options: ['哈希表', '冒泡排序', '二分查找', '递归'], answer: 0, explanation: '<strong>哈希表</strong> 用额外空间换 O(1) 查找时间。' },
+        { id: '21-3', tag: '2021', text: '有 3 个节点的二叉树共有多少种不同形态？', options: ['3', '4', '5', '6'], answer: 2, explanation: '3 个节点二叉树形态数为 <strong>卡特兰数 C₃ = 5</strong>。' },
+        { id: '21-4', tag: '2021', text: 'C++ 中 <code>override</code> 关键字的作用？', options: ['强制重写', '禁止继承', '声明虚函数', '定义友元'], answer: 0, explanation: '<code>override</code> 显式声明函数 <strong>重写基类虚函数</strong>，编译期检查。' },
+        { id: '21-5', tag: '2021', text: '队列的典型应用场景是？', options: ['BFS', 'DFS', '递归', '排序'], answer: 0, explanation: '<strong>BFS（广度优先搜索）</strong> 使用队列。' },
+        { id: '21-6', tag: '2021', text: '以下哪个是堆的特性？', options: ['完全二叉树', '平衡二叉树', '二叉搜索树', '满二叉树'], answer: 0, explanation: '堆是一棵 <strong>完全二叉树</strong>，且满足堆序。' },
+        { id: '21-7', tag: '2021', text: 'C++ 中 <code>std::set</code> 的元素是否有序？', options: ['有序', '无序', '取决于哈希', '随机'], answer: 0, explanation: '<code>std::set</code> 底层是红黑树，元素 <strong>有序</strong>。' },
+        { id: '21-8', tag: '2021', text: '以下哪种算法适合求单源最短路径？', options: ['Floyd', 'Dijkstra', 'Kruskal', 'Prim'], answer: 1, explanation: '<strong>Dijkstra</strong> 求单源最短路径（非负权）。' },
+        { id: '21-9', tag: '2021', text: 'C++ 中 <code>namespace</code> 的作用是？', options: ['避免命名冲突', '定义类', '分配内存', '异常处理'], answer: 0, explanation: '<code>namespace</code> 用于 <strong>避免命名冲突</strong>。' },
+        { id: '21-10', tag: '2021', text: '折半查找的判定树是？', options: ['完全二叉树', '平衡二叉树', '二叉搜索树', '满二叉树'], answer: 0, explanation: '折半查找的判定树是 <strong>完全二叉树</strong>。' }
+    ];
+
+    // -------- 组装全部 --------
+    const ALL_QUESTIONS = [
+        ...EASY_QUESTIONS,
+        ...HARD_QUESTIONS,
+        ...Q2025,
+        ...Q2024,
+        ...Q2023,
+        ...Q2022,
+        ...Q2021
+    ];
+
+    // 路由映射
+    const ROUTE_MAP = {
+        'all': { title: '📚 全部题库 · 综合训练', data: ALL_QUESTIONS },
+        'easy': { title: '⚠️ 易错题 · 高频易错专项', data: EASY_QUESTIONS },
+        'hard': { title: '🔥 难题集 · 拔高训练', data: HARD_QUESTIONS },
+        '2025': { title: '📅 2025 年 CSP 初赛真题', data: Q2025 },
+        '2024': { title: '📅 2024 年 CSP 初赛真题', data: Q2024 },
+        '2023': { title: '📅 2023 年 CSP 初赛真题', data: Q2023 },
+        '2022': { title: '📅 2022 年 CSP 初赛真题', data: Q2022 },
+        '2021': { title: '📅 2021 年 CSP 初赛真题', data: Q2021 }
+    };
+
+    // ================================================================
+    //  状态
+    // ================================================================
+    let currentRoute = 'all';
+    let currentFilter = 'all';
+    let userAnswers = {};
+    let submitted = false;
+    let allExpVisible = false;
+
+    // ================================================================
+    //  渲染
+    // ================================================================
+    function render() {
+        const routeData = ROUTE_MAP[currentRoute];
+        const qs = routeData ? routeData.data : [];
+        const wrapper = document.getElementById('questionsWrapper');
+        const countEl = document.getElementById('totalCount');
+        const titleEl = document.getElementById('pageTitle');
+
+        titleEl.textContent = routeData ? routeData.title : '📚 题库';
+        countEl.textContent = `共 ${qs.length} 题`;
+
+        if (qs.length === 0) {
+            wrapper.innerHTML = `<div class="empty-tip">📭 该题库暂无题目</div>`;
+            return;
+        }
+
+        let html = '';
+        qs.forEach((q) => {
+            const userVal = userAnswers[q.id] || null;
+            const optLetters = ['A', 'B', 'C', 'D'];
+            const tagClassMap = {
+                '易错': 'tag-easy',
+                '难题': 'tag-hard',
+                '2025': 'tag-2025',
+                '2024': 'tag-2024',
+                '2023': 'tag-2023',
+                '2022': 'tag-2022',
+                '2021': 'tag-2021'
+            };
+            const tagClass = tagClassMap[q.tag] || '';
+
+            let extraClass = '';
+            if (submitted && userVal) {
+                const correctVal = optLetters[q.answer];
+                if (userVal === correctVal) extraClass = 'correct-answer';
+                else extraClass = 'wrong-answer';
+            }
+
+            let hiddenClass = '';
+            if (currentFilter === 'wrong' && submitted) {
+                const correctVal = optLetters[q.answer];
+                if (userVal !== correctVal) hiddenClass = '';
+                else hiddenClass = 'hidden-by-filter';
+            }
+
+            html += `<div class="question ${extraClass} ${hiddenClass}" data-qid="${q.id}">`;
+            html += `<div class="q-header">`;
+            html += `<span class="q-id">${q.id}.</span>`;
+            html += `<span class="q-tag ${tagClass}">${q.tag}</span>`;
+            if (q.tag === '易错') html += `<span style="font-size:11px;color:#94a3b8;">⚠️</span>`;
+            if (q.tag === '难题') html += `<span style="font-size:11px;color:#b91c1c;">🔥</span>`;
+            html += `</div>`;
+            html += `<div class="q-text">${q.text}</div>`;
+            html += `<div class="options">`;
+            q.options.forEach((opt, oi) => {
+                const val = optLetters[oi];
+                const checked = (userVal === val) ? 'checked' : '';
+                html += `<label><input type="radio" name="q_${q.id}" value="${val}" ${checked}> ${val}. ${opt}</label>`;
+            });
+            html += `</div></div>`;
+        });
+
+        wrapper.innerHTML = html;
+
+        document.getElementById('filterStatus').textContent =
+            currentFilter === 'all' ? '📋 显示全部' : '🔴 只看错题';
+
+        // 绑定 radio 事件
+        document.querySelectorAll('input[type="radio"]').forEach(el => {
+            el.addEventListener('change', function() {
+                const qId = this.name.replace('q_', '');
+                if (this.checked) userAnswers[qId] = this.value;
+                else delete userAnswers[qId];
+                if (submitted) {
+                    submitted = false;
+                    document.getElementById('resultBox').classList.remove('show');
+                    document.querySelectorAll('.question').forEach(el => {
+                        el.classList.remove('correct-answer', 'wrong-answer', 'hidden-by-filter');
+                    });
+                }
+            });
+        });
+
+        if (submitted) updateResults();
+    }
+
+    function updateResults() {
+        const routeData = ROUTE_MAP[currentRoute];
+        const qs = routeData ? routeData.data : [];
+        if (qs.length === 0) return;
+
+        const optLetters = ['A', 'B', 'C', 'D'];
+        let correctCount = 0;
+        const details = [];
+        const explanations = [];
+
+        qs.forEach((q) => {
+            const userVal = userAnswers[q.id] || null;
+            const correctVal = optLetters[q.answer];
+            const isCorrect = (userVal === correctVal);
+            if (isCorrect) correctCount++;
+
+            details.push({
+                id: q.id,
+                user: userVal || '未选',
+                correct: correctVal,
+                ok: isCorrect
+            });
+            explanations.push({
+                id: q.id,
+                text: q.explanation,
+                ok: isCorrect
+            });
+        });
+
+        const total = qs.length;
+        const wrong = total - correctCount;
+        const pct = total > 0 ? Math.round((correctCount / total) * 100) : 0;
+
+        document.getElementById('statArea').innerHTML = `
+            <div>✅ 正确：<span class="num green">${correctCount}</span> 题</div>
+            <div>❌ 错误：<span class="num red">${wrong}</span> 题</div>
+            <div>📊 正确率：<span class="num">${pct}%</span></div>
+            <div>📌 总题数：<span>${total}</span></div>
+        `;
+
+        let detailHtml = '';
+        details.forEach(d => {
+            const statusText = d.ok ? '✅ 正确' : '❌ 错误';
+            const cls = d.ok ? 'correct' : 'wrong';
+            detailHtml += `<div class="row"><span class="tag ${cls}">第 ${d.id} 题 ${statusText}</span><span>你的答案：<strong>${d.user}</strong> ｜ 标准答案：<strong>${d.correct}</strong></span></div>`;
+        });
+        document.getElementById('detailList').innerHTML = detailHtml;
+
+        let expHtml = '';
+        explanations.forEach(e => {
+            const statusIcon = e.ok ? '✅' : '❌';
+            const hiddenClass = allExpVisible ? '' : 'hidden-exp';
+            expHtml += `<div class="exp-item ${hiddenClass}"><span class="exp-q">${statusIcon} 第 ${e.id} 题：</span>${e.text}</div>`;
+        });
+        document.getElementById('explanationArea').innerHTML = expHtml;
+
+        document.getElementById('resultBox').classList.add('show');
+
+        // 更新边框
+        document.querySelectorAll('.question').forEach(el => {
+            const qId = el.dataset.qid;
+            const q = qs.find(qq => qq.id === qId);
+            if (!q) return;
+            const userVal = userAnswers[qId] || null;
+            const correctVal = optLetters[q.answer];
+            el.classList.remove('correct-answer', 'wrong-answer');
+            if (submitted && userVal) {
+                if (userVal === correctVal) el.classList.add('correct-answer');
+                else el.classList.add('wrong-answer');
+            }
+        });
+
+        // 筛选
+        if (currentFilter === 'wrong') {
+            document.querySelectorAll('.question').forEach(el => {
+                const qId = el.dataset.qid;
+                const q = qs.find(qq => qq.id === qId);
+                if (!q) return;
+                const userVal = userAnswers[qId] || null;
+                const correctVal = optLetters[q.answer];
+                if (userVal !== correctVal) el.classList.remove('hidden-by-filter');
+                else el.classList.add('hidden-by-filter');
+            });
+        } else {
+            document.querySelectorAll('.question').forEach(el => el.classList.remove('hidden-by-filter'));
+        }
+    }
+
+    // ================================================================
+    //  路由
+    // ================================================================
+    function navigate(route) {
+        if (!ROUTE_MAP[route]) route = 'all';
+        currentRoute = route;
+        document.querySelectorAll('#navTabs a').forEach(a => {
+            a.classList.toggle('active', a.dataset.route === route);
+        });
+        submitted = false;
+        document.getElementById('resultBox').classList.remove('show');
+        render();
+    }
+
+    function handleRoute() {
+        const hash = window.location.hash.replace('#/', '') || 'all';
+        navigate(hash);
+    }
+
+    window.addEventListener('hashchange', handleRoute);
+
+    // ================================================================
+    //  事件绑定
+    // ================================================================
+    document.getElementById('checkBtn').addEventListener('click', function() {
+        document.querySelectorAll('input[type="radio"]:checked').forEach(el => {
+            const qId = el.name.replace('q_', '');
+            userAnswers[qId] = el.value;
+        });
+        submitted = true;
+        updateResults();
+        document.getElementById('resultBox').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    });
+
+    document.getElementById('resetBtn').addEventListener('click', function() {
+        userAnswers = {};
+        submitted = false;
+        allExpVisible = false;
+        document.getElementById('toggleExpBtn').textContent = '📖 显示全部解析';
+        document.querySelectorAll('input[type="radio"]').forEach(el => el.checked = false);
+        document.getElementById('resultBox').classList.remove('show');
+        document.querySelectorAll('.question').forEach(el => {
+            el.classList.remove('correct-answer', 'wrong-answer', 'hidden-by-filter');
+        });
+        render();
+    });
+
+    document.querySelectorAll('#filterGroup button').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('#filterGroup button').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            currentFilter = this.dataset.filter;
+            if (!submitted) {
+                document.getElementById('filterStatus').textContent =
+                    currentFilter === 'all' ? '📋 显示全部' : '🔴 只看错题（请先提交）';
+                return;
+            }
+            render();
+        });
+    });
+
+    document.getElementById('toggleExpBtn').addEventListener('click', function() {
+        allExpVisible = !allExpVisible;
+        this.textContent = allExpVisible ? '🙈 收起全部解析' : '📖 显示全部解析';
+        if (!document.getElementById('resultBox').classList.contains('show')) {
+            document.getElementById('checkBtn').click();
+        } else {
+            document.querySelectorAll('#explanationArea .exp-item').forEach(el => {
+                el.classList.toggle('hidden-exp', !allExpVisible);
+            });
+        }
+    });
+
+    document.querySelectorAll('#navTabs a').forEach(a => {
+        a.addEventListener('click', function(e) {
+            e.preventDefault();
+            window.location.hash = '#/' + this.dataset.route;
+        });
+    });
+
+    // ================================================================
+    //  启动
+    // ================================================================
+    if (!window.location.hash) window.location.hash = '#/all';
+    handleRoute();
+</script>
+</body>
+</html>
